@@ -16,6 +16,7 @@ public class IAPHelper: NSObject {
     private var publisher = PassthroughSubject<[SKProduct], Error>()
     public var transactionPublisher = PassthroughSubject<IAPTransactionState, Never>()
     public var purchasedProducts = Set<String>()
+    public var waitingForApproval = Set<String>()
     public var purchasesRestored = 0
 
     public init(productIDs: Set<String>) {
@@ -52,6 +53,11 @@ public extension IAPHelper {
         purchasesRestored = 0
         SKPaymentQueue.default().restoreCompletedTransactions()
     }
+
+    func save(_ transaction: SKPaymentTransaction) {
+        purchasedProducts.insert(transaction.payment.productIdentifier)
+        SKPaymentQueue.default().finishTransaction(transaction)
+    }
 }
 
 @available(iOS 13.0, *)
@@ -71,12 +77,10 @@ extension IAPHelper: SKProductsRequestDelegate {
 extension IAPHelper: SKPaymentTransactionObserver {
     public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         transactions.forEach { transaction in
-            print(transaction)
-            print(transaction.transactionState)
+            waitingForApproval.remove(transaction.payment.productIdentifier)
             switch transaction.transactionState {
             case .purchased:
-                purchasedProducts.insert(transaction.payment.productIdentifier)
-                SKPaymentQueue.default().finishTransaction(transaction)
+                save(transaction)
                 transactionPublisher.send(.purchased(id: transaction.payment.productIdentifier))
             case .failed:
                 let error = transaction.error ?? TransactionError.unknownError
@@ -85,13 +89,12 @@ extension IAPHelper: SKPaymentTransactionObserver {
                 }
                 transactionPublisher.send(.failed(error: error))
             case .deferred:
-                //ask mom
+                waitingForApproval.insert(transaction.payment.productIdentifier)
                 transactionPublisher.send(.deferred(id: transaction.payment.productIdentifier))
             case .purchasing: break
             case .restored:
                 purchasesRestored += 1
-                purchasedProducts.insert(transaction.payment.productIdentifier)
-                SKPaymentQueue.default().finishTransaction(transaction)
+                save(transaction)
             @unknown default: break
             }
         }
@@ -103,18 +106,6 @@ extension IAPHelper: SKPaymentTransactionObserver {
 
     public func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
         transactionPublisher.send(.failed(error: error))
-//        if let error = error as? SKError {
-//            if error.code == .paymentCancelled { return }
-//        }
-//        transactionPublisher.send(.failed(error: error))
-//        if let error = error as? SKError {
-//            if error.code != .paymentCancelled {
-//                purchasePublisher.send(("IAP Restore Error: " + error.localizedDescription,false))
-//            } else {
-//                purchasePublisher.send(("IAP Error: " + error.localizedDescription,false))
-//            }
-//        }
-
     }
 }
 
