@@ -8,9 +8,8 @@
 import StoreKit
 import Combine
 
-@available(iOS 13.0, *)
-public class IAPHelper: NSObject {
-    public static let shared = IAPHelper(productIDs: [])
+public class IAPManager: NSObject {
+    public static let shared = IAPManager(productIDs: [])
     public var productIdentifiers: Set<String>
     private var productsRequest: SKProductsRequest?
     private var publisher = PassthroughSubject<[SKProduct], Error>()
@@ -33,8 +32,7 @@ public class IAPHelper: NSObject {
     }
 }
 
-@available(iOS 13.0, *)
-public extension IAPHelper {
+public extension IAPManager {
     func buyProduct(_ product: SKProduct) {
         let payment = SKPayment(product: product)
         SKPaymentQueue.default().add(payment)
@@ -60,8 +58,7 @@ public extension IAPHelper {
     }
 }
 
-@available(iOS 13.0, *)
-extension IAPHelper: SKProductsRequestDelegate {
+extension IAPManager: SKProductsRequestDelegate {
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         publisher.send(response.products)
         productsRequest = .none
@@ -73,8 +70,7 @@ extension IAPHelper: SKProductsRequestDelegate {
     }
 }
 
-@available(iOS 13.0, *)
-extension IAPHelper: SKPaymentTransactionObserver {
+extension IAPManager: SKPaymentTransactionObserver {
     public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         transactions.forEach { transaction in
             waitingForApproval.remove(transaction.payment.productIdentifier)
@@ -106,6 +102,16 @@ extension IAPHelper: SKPaymentTransactionObserver {
 
     public func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
         transactionPublisher.send(.failed(error: error))
+    }
+}
+
+//MARK: - subscriptions
+public extension IAPManager {
+    func isSubscriptionValid(_ receipt: ReceiptInfo) -> Bool {
+        guard let expirationDate = receipt.expirationDate,
+              !receipt.isCanceled else { return false }
+        #warning("validate grace period")
+        return Date() <= expirationDate
     }
 }
 
