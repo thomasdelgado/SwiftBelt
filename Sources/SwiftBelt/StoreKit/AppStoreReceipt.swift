@@ -41,5 +41,11 @@ public class ReceiptInfo: Codable {
         return Date(timeIntervalSince1970: interval / 1000.0)
     }
 
+    public var purchaseDate: Date? {
+        guard let interval = TimeInterval(purchase_date_ms ?? "") else {
+            return nil
+        }
 
+        return Date(timeIntervalSince1970: interval / 1000.0)
+    }
 }

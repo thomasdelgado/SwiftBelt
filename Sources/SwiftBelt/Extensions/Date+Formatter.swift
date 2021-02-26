@@ -26,4 +26,13 @@ public extension Date {
         formatter.setLocalizedDateFormatFromTemplate("MMddHH:mm")
         return formatter.string(from: self)
     }
+
+    /*
+     transforms a epoch date to the current timezone
+     */
+    func epochDateToCurrentTimezone() -> Date {
+        let timezoneOffset = TimeZone.current.secondsFromGMT()
+        let timezoneEpochOffset = timeIntervalSince1970 + Double(timezoneOffset)
+        return Date(timeIntervalSince1970: timezoneEpochOffset)
+    }
 }

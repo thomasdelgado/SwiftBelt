@@ -81,7 +81,10 @@ extension IAPManager: SKPaymentTransactionObserver {
             case .failed:
                 let error = transaction.error ?? TransactionError.unknownError
                 if let error = error as? SKError {
-                    if error.code == .paymentCancelled { return }
+                    if error.code == .paymentCancelled {
+                        transactionPublisher.send(.canceled)
+                        return
+                    }
                 }
                 transactionPublisher.send(.failed(error: error))
             case .deferred:
@@ -120,6 +123,7 @@ public enum IAPTransactionState {
     case failed(error: Error)
     case deferred(id: String)
     case restores(count: Int)
+    case canceled
 }
 
 enum TransactionError: Error {

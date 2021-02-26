@@ -18,6 +18,10 @@ public extension SKProduct {
         "\(localizedPrice) / \(subscriptionPeriod?.unit.stringValue.capitalized ?? "")"
     }
 
+    var subscriptionFrequency: String {
+        subscriptionPeriod?.unit.frequencyValue ?? ""
+    }
+
     var hasTrialPeriod: Bool {
         introductoryPrice?.paymentMode == .freeTrial
     }
@@ -61,6 +65,21 @@ extension SKProduct.PeriodUnit {
             return "year".localized()
         case .week:
             return "week".localized()
+        @unknown default:
+            return ""
+        }
+    }
+
+    var frequencyValue: String {
+        switch self {
+        case .day:
+            return "daily"
+        case .month:
+            return "monthly"
+        case .year:
+            return "yearly"
+        case .week:
+            return "weekly"
         @unknown default:
             return ""
         }
