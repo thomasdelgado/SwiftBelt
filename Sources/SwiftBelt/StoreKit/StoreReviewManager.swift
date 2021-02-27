@@ -6,7 +6,7 @@
 //
 
 import StoreKit
-
+import SwiftUI
 /**
  based on best practices by apple
  link: https://developer.apple.com/documentation/storekit/skstorereviewcontroller/requesting_app_store_reviews
@@ -51,7 +51,7 @@ public class StoreReviewManager {
     public func finishTask() {
         incrementTaskCount()
         if shouldShowReview() {
-            showStoreReview()
+            showThumbsAlert()
         }
     }
 
@@ -78,11 +78,36 @@ public class StoreReviewManager {
         return taskCount % multipleTaskCount == 0 && currentVersion != lastVersionPromptedForReview
     }
 
-    private func showStoreReview() {
+    func showStoreReview() {
         guard let currentVersion = currentVersion else { return }
-        SKStoreReviewController.requestReview()
+        if let windowScene = UIApplication.shared.getKeyWindow()?.windowScene {
+            SKStoreReviewController.requestReview(in: windowScene)
+        }
         setVersionPromptedForReview(currentVersion)
     }
+
+    @available(iOS 14.0, *)
+    public func showThumbsAlert() {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
+        let alert = UIHostingController(rootView: ThumbsAlertView(parent: alertController, manager: self))
+        alertController.setValue(alert, forKey: "contentViewController")
+        UINavigationController.topViewController()?.present(alertController, animated: true, completion: nil)
+    }
+
+    func showFeedbackAlert() {
+        print("feedback")
+    }
+
+//    func showFeedbackAlert(from viewController: UIViewController, withVersion version: String) {
+//        let storyboard = UIStoryboard(name: K.reviewStoryboard, bundle: nil)
+//        let reviewAlert = storyboard.instantiateViewController(withIdentifier: K.feedbackAlert)
+//
+//        setVersionPromptedForReview(version)
+//
+//        reviewAlert.modalPresentationStyle = .custom
+//        reviewAlert.modalTransitionStyle = .crossDissolve
+//        viewController.present(reviewAlert, animated: true)
+//    }
 }
 
 private struct UserDefaultsKeys {

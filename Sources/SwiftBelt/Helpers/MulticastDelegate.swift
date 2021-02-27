@@ -6,7 +6,7 @@
 //  Copyright © 2020 Thomas Delgado. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 class MulticastDelegate<T> {
 
