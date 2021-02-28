@@ -95,19 +95,19 @@ public class StoreReviewManager {
     }
 
     func showFeedbackAlert() {
-        print("feedback")
-    }
+        let feedbackAlert = FeedbackAlert(
+            nibName: String(describing: FeedbackAlert.self),
+            bundle: Bundle(url: Bundle.module.bundleURL)
+        )
 
-//    func showFeedbackAlert(from viewController: UIViewController, withVersion version: String) {
-//        let storyboard = UIStoryboard(name: K.reviewStoryboard, bundle: nil)
-//        let reviewAlert = storyboard.instantiateViewController(withIdentifier: K.feedbackAlert)
-//
-//        setVersionPromptedForReview(version)
-//
-//        reviewAlert.modalPresentationStyle = .custom
-//        reviewAlert.modalTransitionStyle = .crossDissolve
-//        viewController.present(reviewAlert, animated: true)
-//    }
+        if let currentVersion = currentVersion {
+            setVersionPromptedForReview(currentVersion)
+        }
+
+        feedbackAlert.modalPresentationStyle = .custom
+        feedbackAlert.modalTransitionStyle = .crossDissolve
+        UINavigationController.topViewController()?.present(feedbackAlert, animated: true)
+    }
 }
 
 private struct UserDefaultsKeys {

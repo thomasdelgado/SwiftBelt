@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  BaseViewController.swift
 //  
 //
 //  Created by Thomas Delgado on 27/02/21.
@@ -8,6 +8,7 @@
 import UIKit
 
 class BaseViewController: UIViewController {
+    var fixedKeyboardOffset: CGFloat?
     var viewOrigin: CGFloat = 0
     var keyboardVisibleHeight: CGFloat = 0
     var alwaysMoveKeyboard: Bool = false
@@ -48,11 +49,11 @@ extension BaseViewController {
         viewOrigin = view.frame.origin.y
         NotificationCenter.default.addObserver(self,
                                                selector:
-                                                #selector(KeyboardLayoutConstraint.keyboardWillShowNotification(_:)),
+                                                #selector(keyboardWillShowNotification(_:)),
                                                name: UIWindow.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector:
-                                                #selector(KeyboardLayoutConstraint.keyboardWillHideNotification(_:)),
+                                                #selector(keyboardWillHideNotification(_:)),
                                                name: UIWindow.keyboardWillHideNotification, object: nil)
     }
 
