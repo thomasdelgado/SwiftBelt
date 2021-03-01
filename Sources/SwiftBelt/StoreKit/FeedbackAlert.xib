@@ -24,9 +24,9 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fb8-OX-mdP">
-                    <rect key="frame" x="30" y="229.5" width="354" height="447.5"/>
+                    <rect key="frame" x="30" y="239" width="354" height="428.5"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Agradecemos pela resposta" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.80000001192092896" translatesAutoresizingMaskIntoConstraints="NO" id="Zaj-Zr-iS2">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thank you for your feedback" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.80000001192092896" translatesAutoresizingMaskIntoConstraints="NO" id="Zaj-Zr-iS2">
                             <rect key="frame" x="10" y="60" width="334" height="24"/>
                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                             <nil key="textColor"/>
@@ -44,7 +44,7 @@
                             </connections>
                         </button>
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Liz-9d-Gzl">
-                            <rect key="frame" x="30" y="152.5" width="294" height="200"/>
+                            <rect key="frame" x="30" y="133.5" width="294" height="200"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="200" id="34U-Eq-WpA"/>
@@ -54,19 +54,17 @@
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                         </textView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oFA-OK-gu1">
-                            <rect key="frame" x="30" y="372.5" width="294" height="45"/>
+                            <rect key="frame" x="30" y="353.5" width="294" height="45"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="45" id="AvA-ns-EYd"/>
                             </constraints>
-                            <state key="normal" title="ENVIAR"/>
+                            <state key="normal" title="Send"/>
                             <connections>
                                 <action selector="didTapSend:" destination="-1" eventType="touchUpInside" id="GJe-Oe-bWw"/>
                             </connections>
                         </button>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.80000001192092896" translatesAutoresizingMaskIntoConstraints="NO" id="Cc9-9e-Yuf">
-                            <rect key="frame" x="37.5" y="94" width="269.5" height="38.5"/>
-                            <string key="text">Estamos sempre buscando melhorar 
-os nossos serviços e produtos</string>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="We always strive to make our product better" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.80000001192092896" translatesAutoresizingMaskIntoConstraints="NO" id="Cc9-9e-Yuf">
+                            <rect key="frame" x="12.5" y="94" width="319.5" height="19.5"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>

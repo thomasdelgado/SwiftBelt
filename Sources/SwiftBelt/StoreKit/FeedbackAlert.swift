@@ -13,6 +13,7 @@ class FeedbackAlert: BaseViewController {
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var buttonSend: UIButton!
     @IBOutlet weak var alertView: UIView!
+    var storeReviewManager: StoreReviewManager?
 
     static let textPadding = UIEdgeInsets(top: 15,
                                           left: 15,
@@ -25,6 +26,7 @@ class FeedbackAlert: BaseViewController {
         super.viewDidLoad()
         configureView()
         configureTextView()
+        setLocalizables()
     }
 
     func configureView() {
@@ -45,17 +47,26 @@ class FeedbackAlert: BaseViewController {
         textView.delegate = self
     }
 
+    func setLocalizables() {
+        labelTitle.text = labelTitle.text?.localized()
+        labelDescription.text = labelDescription.text?.localized()
+        buttonSend.setTitle(buttonSend.titleLabel?.text, for: .normal)
+        buttonSend.setTitle(buttonSend.titleLabel?.text, for: .disabled)
+    }
+
     @IBAction func didTapClose(_ sender: Any) {
-//        StoreReviewManager.shared.negativeReviewWith("") { _ in }
+        storeReviewManager?.negativeReviewWith("") { _ in }
         dismiss(animated: true, completion: nil)
     }
 
     @IBAction func didTapSend(_ sender: Any) {
         buttonSend.startAnimating()
-//        StoreReviewManager.shared.negativeReviewWith(textView.text) {[weak self] _ in
-//            self?.buttonSend.stopAnimating()
-//            self?.dismiss(animated: true, completion: nil)
-//        }
+        storeReviewManager?.negativeReviewWith(textView.text) {[weak self] _ in
+            DispatchQueue.main.async {
+                self?.buttonSend.stopAnimating()
+                self?.dismiss(animated: true, completion: nil)
+            }
+        }
     }
 
 }

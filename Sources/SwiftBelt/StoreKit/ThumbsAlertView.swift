@@ -51,6 +51,7 @@ struct ThumbsAlertView: View {
 
     func thumbsUp() {
         parent.dismiss(animated: true) {
+            manager.service?.positiveReview { _ in }
             manager.showStoreReview()
         }
     }

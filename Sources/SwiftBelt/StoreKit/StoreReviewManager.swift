@@ -7,6 +7,12 @@
 
 import StoreKit
 import SwiftUI
+
+public protocol StoreReviewServiceProtocol: class {
+    func positiveReview(completion: @escaping (Bool) -> Void)
+    func negativeReview(comment: String, completion: @escaping (Bool) -> Void)
+}
+
 /**
  based on best practices by apple
  link: https://developer.apple.com/documentation/storekit/skstorereviewcontroller/requesting_app_store_reviews
@@ -14,6 +20,7 @@ import SwiftUI
 @available(iOS 10.3, *)
 public class StoreReviewManager {
     public static let shared = StoreReviewManager()
+    public var service: StoreReviewServiceProtocol?
     var multipleTaskCount = 5
 
     private var taskCount: Int {
@@ -99,6 +106,7 @@ public class StoreReviewManager {
             nibName: String(describing: FeedbackAlert.self),
             bundle: Bundle(url: Bundle.module.bundleURL)
         )
+        feedbackAlert.storeReviewManager = self
 
         if let currentVersion = currentVersion {
             setVersionPromptedForReview(currentVersion)
@@ -113,4 +121,14 @@ public class StoreReviewManager {
 private struct UserDefaultsKeys {
     static let processCompletedCountKey = "processCompletedCountKey"
     static let lastVersionPromptedForReviewKey = "lastVersionPromptedForReviewKey"
+}
+
+extension StoreReviewManager {
+    func positiveReview(completion: @escaping (Bool) -> Void ) {
+        service?.positiveReview(completion: completion)
+    }
+
+    func negativeReviewWith(_ comment: String, completion: @escaping (Bool) -> Void ) {
+        service?.negativeReview(comment: comment, completion: completion)
+    }
 }
