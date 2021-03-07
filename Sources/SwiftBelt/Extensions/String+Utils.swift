@@ -20,4 +20,13 @@ public extension String {
     func convertToDouble() -> Double? {
         NumberFormatter().number(from: self)?.doubleValue
     }
+
+    func convertCurrency() -> Double? {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = Locale.current
+
+        return formatter.number(from: self)?.doubleValue
+    }
+
 }
