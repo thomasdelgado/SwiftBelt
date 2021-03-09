@@ -110,10 +110,18 @@ extension IAPManager: SKPaymentTransactionObserver {
 
 //MARK: - subscriptions
 public extension IAPManager {
-    func isSubscriptionValid(_ receipt: ReceiptInfo) -> Bool {
+    func isSubscriptionValid(_ receipt: ReceiptInfo, pendingInfo: [PendingRenewalInfo]) -> Bool {
         guard let expirationDate = receipt.expirationDate,
               !receipt.isCanceled else { return false }
-        #warning("validate grace period")
+
+        //validate grace period
+        let pendingInfo = pendingInfo.first { $0.original_transaction_id == receipt.original_transaction_id }
+        if let pendingInfo = pendingInfo,
+           let gracePeriod = pendingInfo.gracePeriodDate,
+           gracePeriod > Date() {
+            return true
+        }
+
         return Date() <= expirationDate
     }
 }
