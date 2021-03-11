@@ -29,7 +29,7 @@ public extension URLSession {
         for request: Request<Value>,
         using decoder: JSONDecoder = .init()
     ) -> AnyPublisher<Value, Swift.Error> {
-        dataTaskPublisher(for: request.urlRequest)
+        dataTaskPublisher(for: request.urlRequest)            
             .mapError(Error.networking)
             .map(\.data)
             .decode(type: Value.self, decoder: decoder)
