@@ -56,8 +56,8 @@ public class PendingRenewalInfo: Codable {
     public var grace_period_expires_date_ms: String?
     public var is_in_billing_retry_period: String?
     public var original_transaction_id: String?
-    
-    public var gracePeriodDate: Date? { 
+
+    public var gracePeriodDate: Date? {
         guard let interval = TimeInterval(grace_period_expires_date_ms  ?? "") else {
             return nil
         }

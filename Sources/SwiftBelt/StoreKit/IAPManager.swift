@@ -73,7 +73,7 @@ extension IAPManager: SKProductsRequestDelegate {
 extension IAPManager: SKPaymentTransactionObserver {
     public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         transactions.forEach { transaction in
-            waitingForApproval.remove(transaction.payment.productIdentifier)
+            waitingForApproval.remove(transaction.payment.productIdentifier)            
             switch transaction.transactionState {
             case .purchased:
                 save(transaction)
@@ -97,6 +97,11 @@ extension IAPManager: SKPaymentTransactionObserver {
             @unknown default: break
             }
         }
+    }
+
+    public func paymentQueue(_ queue: SKPaymentQueue, didRevokeEntitlementsForProductIdentifiers productIdentifiers: [String]) {
+        purchasedProducts.forEach { purchasedProducts.remove($0) }
+        transactionPublisher.send(.reinvoked)
     }
 
     public func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
@@ -132,6 +137,24 @@ public enum IAPTransactionState {
     case deferred(id: String)
     case restores(count: Int)
     case canceled
+    case reinvoked
+
+    public func status() -> String {
+        switch self {
+        case .purchased:
+            return "purchased"
+        case .failed:
+            return "failed"
+        case .deferred:
+            return "deferred"
+        case .restores:
+            return "restore"
+        case .canceled:
+            return "canceled"
+        case .reinvoked:
+            return "reinvoked"
+        }
+    }
 }
 
 enum TransactionError: Error {
