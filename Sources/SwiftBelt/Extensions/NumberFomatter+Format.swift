@@ -28,3 +28,9 @@ public extension NumberFormatter {
         return currency.currencyCode
     }
 }
+
+public extension Double {
+    func formatCurrency() -> String {
+        NumberFormatter.formatCurrency(self)
+    }
+}
