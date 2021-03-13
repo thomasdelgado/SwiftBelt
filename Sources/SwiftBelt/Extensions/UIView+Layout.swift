@@ -13,7 +13,7 @@ public extension UIView {
         case height
     }
     
-    var cornerRadius: CGFloat {
+    var radius: CGFloat {
         get {
             return layer.cornerRadius
         }
@@ -25,9 +25,9 @@ public extension UIView {
     func setAsCircle(using option: CircleOptions = .width) {
         switch option {
         case .width:
-            cornerRadius = self.frame.width / 2
+            radius = self.frame.width / 2
         case .height:
-            cornerRadius = self.frame.height / 2
+            radius = self.frame.height / 2
         }
     }
 

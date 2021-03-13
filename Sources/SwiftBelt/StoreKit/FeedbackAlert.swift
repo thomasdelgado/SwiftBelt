@@ -35,13 +35,13 @@ class FeedbackAlert: BaseViewController {
         labelTitle.font = DesignSheet.Font.headline
         labelDescription.font = DesignSheet.Font.body
         buttonSend.setAppearanceFor(.disabled)
-        alertView.cornerRadius = DesignSheet.cornerRadius
+        alertView.radius = DesignSheet.cornerRadius
     }
 
     func configureTextView() {
         textView.borderColor = DesignSheet.borderColor
         textView.textContainerInset = FeedbackAlert.textPadding
-        textView.cornerRadius = DesignSheet.cornerRadius
+        textView.radius = DesignSheet.cornerRadius
         textView.placeholder = placeholderKey.localized()
         textView.borderWidth = 1
         textView.delegate = self

@@ -9,7 +9,7 @@ import UIKit
 
 extension UIButton {
     func setAppearanceFor(_ style: ButtonStyle) {
-        cornerRadius = DesignSheet.cornerRadius
+        radius = DesignSheet.cornerRadius
         titleLabel?.font = DesignSheet.Font.boldBody
         switch style {
         case .primary:
