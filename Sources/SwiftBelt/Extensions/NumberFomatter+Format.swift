@@ -33,4 +33,8 @@ public extension Double {
     func formatCurrency() -> String {
         NumberFormatter.formatCurrency(self)
     }
+
+    func formatCurrencyWithoutSymbol() -> String {
+        NumberFormatter.formatCurrencyWithoutSymbol(self)
+    }
 }
