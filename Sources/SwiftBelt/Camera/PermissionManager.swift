@@ -4,7 +4,7 @@
 //
 //  Created by Thomas Delgado on 02/03/21.
 //
-
+#if !os(watchOS)
 import UIKit
 import AVFoundation
 import Combine
@@ -47,3 +47,4 @@ public class PermissionManager {
         }
     }
 }
+#endif

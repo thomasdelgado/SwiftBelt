@@ -4,7 +4,7 @@
 //
 //  Created by Thomas Delgado on 01/03/21.
 //
-
+#if !os(watchOS)
 import Foundation
 
 public extension NSUbiquitousKeyValueStore {
@@ -42,3 +42,4 @@ public extension NSUbiquitousKeyValueStore {
         return []
     }
 }
+#endif
