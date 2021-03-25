@@ -15,7 +15,8 @@ public extension NumberFormatter {
     }
 
     static func formatCurrencyWithoutSymbol(_ value: Double) -> String {
-        currency.string(for: value)?.replacingOccurrences(of: currency.currencySymbol, with: "") ?? ""
+        currency.string(for: value)?.replacingOccurrences(of: currency.currencySymbol, with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)  ?? ""
     }
 
     static var currency: NumberFormatter {
