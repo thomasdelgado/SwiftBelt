@@ -56,4 +56,24 @@ public class WatchSender {
             debugPrint(error)
         }
     }
+
+    // Transfer a piece fo user info for current complications if the session is activated
+    // and update UI with the command status.
+    // a WCSessionUserInfoTransfer object is returned to monitor the progress or cancel the operation.
+    //
+    public func transferCurrentComplicationUserInfo(_ userInfo: [String: Any]) {
+        guard WCSession.default.activationState == .activated else {
+            debugPrint("WCSession is not activated yet!")
+            return
+        }
+
+        #if os(iOS)
+        if WCSession.default.isComplicationEnabled {
+            let userInfoTranser = WCSession.default.transferCurrentComplicationUserInfo(userInfo)
+            debugPrint(userInfoTranser.isTransferring)
+        } else {
+            debugPrint("Complication is not enabled!")
+        }
+        #endif
+    }
 }

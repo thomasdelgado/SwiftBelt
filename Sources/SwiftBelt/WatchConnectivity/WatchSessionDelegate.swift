@@ -8,6 +8,10 @@
 
 import WatchConnectivity
 import Combine
+#if os(watchOS)
+import ClockKit
+#endif
+
 
 public class WatchSessionDelegate: NSObject, WCSessionDelegate {
     public static let shared = WatchSessionDelegate()
@@ -21,15 +25,11 @@ public class WatchSessionDelegate: NSObject, WCSessionDelegate {
     }
 
     public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        //what to do here?
         #if os(watchOS)
         debugPrint("watch session active")
         #else
         debugPrint("iOS session active")
         #endif
-        debugPrint(session)
-        debugPrint(activationState.rawValue)
-        debugPrint(error as Any)
     }
 
     // Called when an app context is received.
@@ -45,6 +45,22 @@ public class WatchSessionDelegate: NSObject, WCSessionDelegate {
     public func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
         sessionPublisher.send(message)
         replyHandler([:])
+    }
+
+    // Called when a userInfo is received.
+    // This method is shared with sending transferUserInfo, so it might need a key to differenciate
+    //
+    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+        #if os(watchOS)
+        let server = CLKComplicationServer.sharedInstance()
+        if let complications = server.activeComplications {
+            for complication in complications {
+                // Call this method sparingly. If your existing complication data is still valid,
+                // consider calling the extendTimeline(for:) method instead.
+                server.reloadTimeline(for: complication)
+            }
+        }
+        #endif
     }
 
 }
