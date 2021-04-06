@@ -52,6 +52,55 @@ public extension SKProduct {
             return 0
         }
     }
+
+    var pricePerMonth: Double {
+        switch subscriptionPeriod?.unit {
+        case .day:
+            return price.doubleValue * 30
+        case .week:
+            return price.doubleValue * 4
+        case .month:
+            return price.doubleValue
+        case .year:
+            return price.doubleValue / 12
+        case .none:
+            return price.doubleValue
+        @unknown default:
+            return 0
+        }
+    }
+
+    var localizedPricePerMonth: String {
+        let formatter = NumberFormatter.currency
+        formatter.locale = priceLocale
+        return formatter.string(from: NSNumber(value: pricePerMonth)) ?? ""
+    }
+
+    var frequencyInMonths: String {
+        switch subscriptionPeriod?.unit {
+        case .month:
+            let units = subscriptionPeriod?.numberOfUnits ?? 1
+            if units == 1 {
+                return "1 " + "month".localized()
+            } else {
+                return "\(units) \("months".localized())"
+            }
+        case .year:
+            return "12 " + "months".localized()
+        default:
+            return ""
+        }
+    }
+
+    func isComparableForDiscount(with product: SKProduct) -> Bool  {
+        subscriptionGroupIdentifier == product.subscriptionGroupIdentifier &&
+            subscriptionPeriod?.unit.rawValue ?? 0 > product.subscriptionPeriod?.unit.rawValue ?? 0 &&
+            oneYearPrice < product.oneYearPrice
+    }
+
+    func discountBasedOn(_ product: SKProduct) -> String {
+        String(format: "%.0f", (product.oneYearPrice - oneYearPrice) / product.oneYearPrice * 100 ) + "%"
+    }
 }
 
 extension SKProduct.PeriodUnit {
