@@ -111,6 +111,12 @@ extension IAPManager: SKPaymentTransactionObserver {
     public func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
         transactionPublisher.send(.failed(error: error))
     }
+
+    #if os(iOS)
+    public func paymentQueue(_ queue: SKPaymentQueue, shouldAddStorePayment payment: SKPayment, for product: SKProduct) -> Bool {
+        return true
+    }
+    #endif
 }
 
 //MARK: - subscriptions
