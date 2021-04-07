@@ -113,6 +113,10 @@ extension IAPManager: SKPaymentTransactionObserver {
     }
 
     #if os(iOS)
+    /*
+     Promoted In-App Purchases delegate
+     https://developer.apple.com/videos/play/wwdc2017/303/?time=1587
+     */
     public func paymentQueue(_ queue: SKPaymentQueue, shouldAddStorePayment payment: SKPayment, for product: SKProduct) -> Bool {
         return true
     }
