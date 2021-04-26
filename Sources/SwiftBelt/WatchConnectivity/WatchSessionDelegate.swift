@@ -11,14 +11,24 @@ import Combine
 #if os(watchOS)
 import ClockKit
 #endif
+import os
 
+public protocol WatchSessionMessageDelegate {
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void)
+}
 
 public class WatchSessionDelegate: NSObject, WCSessionDelegate {
+    let logger = Logger(subsystem: "com.delgado.swiftbelt", category: "Watch Delegate")
+    
     public static let shared = WatchSessionDelegate()
-    public let sessionPublisher = PassthroughSubject<[String: Any], Never>()
+    public let sessionPublisher = PassthroughSubject<WatchSessionEvent, Never>()
+    public var delegate: WatchSessionMessageDelegate?
+    public var session: WCSession {
+        return WCSession.default
+    }
 
     public func activate() {
-        if WCSession.isSupported() {
+        if WCSession.isSupported() && WCSession.default.activationState != .activated {
             WCSession.default.delegate = self
             WCSession.default.activate()
         }
@@ -30,21 +40,23 @@ public class WatchSessionDelegate: NSObject, WCSessionDelegate {
         #else
         debugPrint("iOS session active")
         #endif
+        sessionPublisher.send(.sessionStarted)
     }
 
     // Called when an app context is received.
     //
     public func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
-        sessionPublisher.send(applicationContext)
+        logger.debug("\(#function) received context \(applicationContext)")
+//        logger.debug("\(#function) received context")
+        sessionPublisher.send(.messageReceived(message: applicationContext))
     }
 
     public func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-        sessionPublisher.send(message)
+        sessionPublisher.send(.messageReceived(message: message))
     }
 
     public func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
-        sessionPublisher.send(message)
-        replyHandler([:])
+        delegate?.session(session, didReceiveMessage: message, replyHandler: replyHandler)
     }
 
     // Called when a userInfo is received.
@@ -80,19 +92,32 @@ extension WatchSessionDelegate {
 
     public func sessionWatchStateDidChange(_ session: WCSession) {
         debugPrint("\(#function): activationState = \(session.activationState.rawValue)")
+        if session.activationState == .activated {
+            //if state changes and activation state is active, it's a nice opportunity to update app context
+            sessionPublisher.send(.stateChanged)
+        }
     }
     #endif
 
-//    // Called when WCSession activation state is changed.
-//    //
-//    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-//        postNotificationOnMainQueueAsync(name: .activationDidComplete)
-//    }
-//
-//    // Called when WCSession reachability is changed.
-//    //
-//    func sessionReachabilityDidChange(_ session: WCSession) {
-//        postNotificationOnMainQueueAsync(name: .reachabilityDidChange)
-//    }
+    // Called when WCSession reachability is changed.
+    //
+    public func sessionReachabilityDidChange(_ session: WCSession) {
+        debugPrint("\(#function): isReachable = \(session.isReachable)")
+    }
+}
 
+public enum WatchSessionEvent {
+    case sessionStarted
+    case stateChanged
+    case messageReceived(message: [String: Any])
+}
+
+extension WatchSessionDelegate {
+    public func activateAndReload() {
+        if session.activationState == .activated {
+            sessionPublisher.send(.sessionStarted)
+        } else {
+            activate()
+        }
+    }
 }

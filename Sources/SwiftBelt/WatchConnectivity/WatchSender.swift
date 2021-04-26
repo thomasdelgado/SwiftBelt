@@ -8,13 +8,24 @@
 
 import Foundation
 import WatchConnectivity
+import os
+import Combine
 
 public class WatchSender {
+    public let logger = Logger(subsystem: "com.delgado.swiftbelt", category: "Watch Sender")
     public static let shared = WatchSender()
+    public var lastComplicationSentDate: Date?
+    public var queuedComplication: [String: Any]?
+    var cancellable: AnyCancellable?
     public var isAbleToSendMessages: Bool {
         WCSession.default.activationState == .activated && WCSession.default.isReachable
     }
+    public let complicationPublisher = PassthroughSubject<[String: Any], Never>()
 
+    init() {
+        setComplicationSubscriber()
+    }
+    
     // Update app context if the session is activated and update UI with the command status.
     //
     public func updateAppContext(_ context: [String: Any]) {
@@ -24,6 +35,7 @@ public class WatchSender {
         }
         do {
             try WCSession.default.updateApplicationContext(context)
+            logger.debug("context sent")
         } catch {
             debugPrint(error)
         }
@@ -38,10 +50,15 @@ public class WatchSender {
             return
         }
 
+        #if os(watchOS)
+        logger.debug("message sent from watch")
+        #else
+        logger.debug("message sent from iOS")
+        #endif
+
         WCSession.default.sendMessage(message, replyHandler: nil) { error in
             debugPrint(error)
-        }
-
+        }        
     }
 
     public func sendMessage(_ message: [String: Any],
@@ -51,6 +68,12 @@ public class WatchSender {
             debugPrint("WCSession is not activated yet!")
             return
         }
+
+        #if os(watchOS)
+        logger.debug("message sent from watch")
+        #else
+        logger.debug("message sent from iOS")
+        #endif
 
         WCSession.default.sendMessage(message, replyHandler: replyHandler) { error in
             debugPrint(error)
@@ -70,10 +93,28 @@ public class WatchSender {
         #if os(iOS)
         if WCSession.default.isComplicationEnabled {
             let userInfoTranser = WCSession.default.transferCurrentComplicationUserInfo(userInfo)
-            debugPrint(userInfoTranser.isTransferring)
+            logger.debug("complication transfer remaining:  \(WCSession.default.remainingComplicationUserInfoTransfers)")
+            logger.debug("\(userInfoTranser.isTransferring)")
+            lastComplicationSentDate = Date()
         } else {
             debugPrint("Complication is not enabled!")
         }
         #endif
+    }
+
+    func setComplicationSubscriber() {
+        cancellable = complicationPublisher
+            .debounce(for: .seconds(5 * 60), scheduler: RunLoop.current)
+            .sink { [weak self] userInfo in
+                self?.logger.debug("throtled complication sent \(userInfo)")
+                self?.queuedComplication = nil
+                WatchSender.shared.transferCurrentComplicationUserInfo(userInfo)
+            }
+    }
+
+    public func sendQueuedComplication() {
+        guard let userInfo = queuedComplication else { return }
+        WatchSender.shared.transferCurrentComplicationUserInfo(userInfo)
+        logger.debug("queued complication sent")
     }
 }
