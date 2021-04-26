@@ -11,10 +11,10 @@ public extension String {
     static let localizable = "localizable"
 
     func localized() -> String {
-        localized(fromFile: String.localizable)
+        localized(from: String.localizable)
     }
 
-    func localized(fromFile file: String) -> String {
-        return NSLocalizedString(self, tableName: file.capitalized, value: self, comment: "")
+    func localized(from tableName: String) -> String {
+        return NSLocalizedString(self, tableName: tableName.capitalized, value: self, comment: "")
     }
 }
